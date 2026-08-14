@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { INITIAL_PRODUCTS } from './data/products';
+import React, { useState, useEffect } from 'react';
 import { Product, CartItem } from './types';
 import { Header } from './components/Header';
 import { HeroSection } from './components/HeroSection';
@@ -13,19 +12,94 @@ import { ShopView } from './components/ShopView';
 import { CartDrawer } from './components/CartDrawer';
 import { QuickViewModal } from './components/QuickViewModal';
 import { Footer } from './components/Footer';
+import { AdminPanel } from './components/admin/AdminPanel';
+import { AdminLogin } from './components/admin/AdminLogin';
+import {
+  loadAllProducts,
+  saveProductItem,
+  deleteProductItem,
+  checkAdminSession,
+} from './lib/supabase';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'home' | 'shop'>('home');
-  const [products] = useState<Product[]>(INITIAL_PRODUCTS);
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    // Initial sample items in cart for demonstration
-    { product: INITIAL_PRODUCTS[0], quantity: 1 },
-    { product: INITIAL_PRODUCTS[2], quantity: 2 },
-  ]);
+  const [activeTab, setActiveTab] = useState<'home' | 'shop' | 'admin'>('home');
+  // Starts empty and fetches live catalog directly from Supabase
+  const [products, setProducts] = useState<Product[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [initialShopCategory, setInitialShopCategory] = useState<string | undefined>();
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+
+  // Admin authentication states
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
+
+  // Load products directly from Supabase database
+  useEffect(() => {
+    const fetchCatalog = async () => {
+      try {
+        const loaded = await loadAllProducts();
+        setProducts(loaded || []);
+      } catch (err) {
+        console.error('Error loading products from Supabase:', err);
+      }
+    };
+    fetchCatalog();
+
+    // Check if admin is currently authenticated
+    setIsAdminLoggedIn(checkAdminSession());
+
+    // Listen for #admin hash in URL
+    const checkHash = () => {
+      if (window.location.hash === '#admin') {
+        if (checkAdminSession()) {
+          setActiveTab('admin');
+        } else {
+          setShowAdminLoginModal(true);
+        }
+      }
+    };
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
+    return () => window.removeEventListener('hashchange', checkHash);
+  }, []);
+
+  const handleOpenAdmin = () => {
+    if (checkAdminSession()) {
+      setIsAdminLoggedIn(true);
+      setActiveTab('admin');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      setShowAdminLoginModal(true);
+    }
+  };
+
+  const handleAdminLoginSuccess = () => {
+    setIsAdminLoggedIn(true);
+    setShowAdminLoginModal(false);
+    setActiveTab('admin');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdminLoggedIn(false);
+    setActiveTab('home');
+    window.location.hash = '';
+  };
+
+  // Product CRUD operations directly with Supabase
+  const handleSaveProduct = async (product: Product) => {
+    await saveProductItem(product);
+    const updated = await loadAllProducts();
+    setProducts(updated || []);
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    await deleteProductItem(productId);
+    const updated = await loadAllProducts();
+    setProducts(updated || []);
+  };
 
   // Cart operations
   const handleAddToCart = (product: Product, quantity: number = 1) => {
@@ -78,15 +152,36 @@ export default function App() {
         setActiveTab={setActiveTab}
         cartCount={totalCartCount}
         onOpenCart={() => setIsCartOpen(true)}
+        onOpenAdmin={handleOpenAdmin}
         onSearch={setSearchQuery}
         searchQuery={searchQuery}
       />
 
       {/* Main Content Area */}
       <main className="flex-grow w-full">
-        {activeTab === 'home' ? (
+        {activeTab === 'admin' && isAdminLoggedIn ? (
+          <AdminPanel
+            products={products}
+            onSaveProduct={handleSaveProduct}
+            onDeleteProduct={handleDeleteProduct}
+            onCloseAdmin={() => {
+              setActiveTab('home');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onLogout={handleAdminLogout}
+          />
+        ) : activeTab === 'shop' ? (
+          <ShopView
+            products={products}
+            onAddToCart={(p) => handleAddToCart(p, 1)}
+            onQuickView={(p) => setQuickViewProduct(p)}
+            initialCategory={initialShopCategory}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+          />
+        ) : (
           <>
-            {/* Hero Section */}
+            {/* Hero Section with Vibrant Animated Shop Now Button */}
             <HeroSection
               onShopNow={() => {
                 setActiveTab('shop');
@@ -97,7 +192,7 @@ export default function App() {
             {/* Horizontal Category Nav */}
             <CategoryNav onSelectCategory={handleCategorySelect} />
 
-            {/* Limited Time Offers */}
+            {/* Limited Time Offers (Strictly Max 2 Cards) */}
             <LimitedTimeOffers
               products={products}
               onAddToCart={(p) => handleAddToCart(p, 1)}
@@ -107,7 +202,7 @@ export default function App() {
             {/* Industry Leaders Marquee */}
             <BrandsMarquee />
 
-            {/* Best Sellers */}
+            {/* Best Sellers (Any Number of Cards) */}
             <BestSellers
               products={products}
               onAddToCart={(p) => handleAddToCart(p, 1)}
@@ -120,20 +215,19 @@ export default function App() {
             {/* Customer Reviews Ticker */}
             <CustomerReviews />
           </>
-        ) : (
-          <ShopView
-            products={products}
-            onAddToCart={(p) => handleAddToCart(p, 1)}
-            onQuickView={(p) => setQuickViewProduct(p)}
-            initialCategory={initialShopCategory}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-          />
         )}
       </main>
 
       {/* Global Footer */}
-      <Footer />
+      <Footer onOpenAdmin={handleOpenAdmin} />
+
+      {/* Admin Login Modal */}
+      {showAdminLoginModal && (
+        <AdminLogin
+          onLoginSuccess={handleAdminLoginSuccess}
+          onCancel={() => setShowAdminLoginModal(false)}
+        />
+      )}
 
       {/* Quick View Modal */}
       <QuickViewModal

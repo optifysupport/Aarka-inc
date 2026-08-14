@@ -1,6 +1,6 @@
 import { Product, Review } from '../types';
 
-// Import all product images
+// Import local product images from assets
 import b1 from '../../assets/prod-images/b1.png';
 import b2 from '../../assets/prod-images/b2.png';
 import b3 from '../../assets/prod-images/b3.png';
@@ -26,9 +26,10 @@ import s3 from '../../assets/prod-images/s3.png';
 import s4 from '../../assets/prod-images/s4.png';
 import s5 from '../../assets/prod-images/s5.png';
 
-export const INITIAL_PRODUCTS: Product[] = [
+// 1. Default Fallback Offers (2 items)
+export const DEFAULT_OFFER_PRODUCTS: Product[] = [
   {
-    id: 'prod-1',
+    id: 'default-offer-1',
     name: 'Hanging Pendant light',
     category: 'Lighting',
     price: 140.0,
@@ -37,16 +38,20 @@ export const INITIAL_PRODUCTS: Product[] = [
     image: b1,
     onSale: true,
     isNew: true,
+    isOffer: true,
+    isBestSeller: true,
+    inStock: true,
     discountPercentage: 7,
+    description: 'Premium hanging pendant light for modern architectural interiors.',
     specs: {
-      'Movement': 'Automatic Chronograph',
-      'Case Material': '316L Stainless Steel',
-      'Water Resistance': '10 ATM / 100 meters',
-      'Glass': 'Sapphire Crystal Anti-Reflective'
+      'Power': '40W LED',
+      'Material': 'Brushed Aluminum & Glass',
+      'Color Temperature': '3000K Warm White',
+      'Voltage': '220-240V AC'
     }
   },
   {
-    id: 'prod-2',
+    id: 'default-offer-2',
     name: 'Circular Pendant Lights',
     category: 'Lighting',
     price: 110.0,
@@ -54,15 +59,46 @@ export const INITIAL_PRODUCTS: Product[] = [
     rating: 4,
     image: b2,
     onSale: true,
+    isOffer: true,
+    isBestSeller: false,
+    inStock: true,
+    discountPercentage: 8,
+    description: 'Sleek circular ring pendant light designed for offices and homes.',
     specs: {
-      'Processor': 'Octa-Core 3.2GHz',
-      'Display': '6.7" OLED 120Hz',
-      'Storage': '256GB NVMe',
-      'Battery': '5000mAh Supercharge'
+      'Power': '32W LED',
+      'Diameter': '450mm',
+      'Dimmable': 'Yes (Triac / 0-10V)',
+      'Voltage': '220-240V AC'
+    }
+  }
+];
+
+// 2. Default Fallback Best Sellers (6 items)
+export const DEFAULT_BEST_SELLER_PRODUCTS: Product[] = [
+  {
+    id: 'default-bestseller-1',
+    name: 'Hanging Pendant light',
+    category: 'Lighting',
+    price: 140.0,
+    originalPrice: 150.0,
+    rating: 5,
+    image: b1,
+    onSale: true,
+    isNew: true,
+    isOffer: true,
+    isBestSeller: true,
+    inStock: true,
+    discountPercentage: 7,
+    description: 'Premium hanging pendant light for modern architectural interiors.',
+    specs: {
+      'Power': '40W LED',
+      'Material': 'Brushed Aluminum & Glass',
+      'Color Temperature': '3000K Warm White',
+      'Voltage': '220-240V AC'
     }
   },
   {
-    id: 'prod-3',
+    id: 'default-bestseller-2',
     name: '35W Ceiling LED Light',
     category: 'Lighting',
     price: 110.0,
@@ -70,127 +106,68 @@ export const INITIAL_PRODUCTS: Product[] = [
     rating: 4,
     image: b3,
     onSale: true,
+    isOffer: false,
+    isBestSeller: true,
+    inStock: true,
+    discountPercentage: 8,
+    description: 'High efficiency recessed ceiling downlight with high CRI.',
     specs: {
-      'Processor': 'Octa-Core 3.2GHz',
-      'Display': '6.7" OLED 120Hz',
-      'Storage': '256GB NVMe',
-      'Battery': '5000mAh Supercharge'
+      'Power': '35W',
+      'Luminous Flux': '3500 lm',
+      'Beam Angle': '60°',
+      'CRI': '>90'
     }
   },
-
   {
-    id: 'prod-4',
-    name: 'Celing fan with light,remote control',
+    id: 'default-bestseller-3',
+    name: 'Ceiling fan with light, remote control',
     category: 'Fans',
     price: 45.0,
     rating: 5,
     image: f1,
     isNew: true,
+    isOffer: false,
+    isBestSeller: true,
+    inStock: true,
+    description: 'Silent BLDC ceiling fan with integrated LED light and wireless remote.',
     specs: {
-      'Channels': '4 Independent Isolated Channels',
-      'Trigger Voltage': '24V DC / 10A Output',
-      'Mounting': 'Standard 35mm DIN Rail',
-      'Isolation': 'Optocoupler 2500V'
+      'Motor': 'Energy Saving BLDC Motor 28W',
+      'Sweep': '1200mm (48 Inch)',
+      'Speed': '380 RPM',
+      'Control': 'RF Remote + App'
     }
   },
   {
-    id: 'prod-5',
-    name: 'Celing fan',
+    id: 'default-bestseller-4',
+    name: 'Ceiling fan classic',
     category: 'Fans',
     price: 45.0,
     rating: 5,
     image: f2,
     isNew: true,
+    isOffer: false,
+    isBestSeller: true,
+    inStock: true,
+    description: 'Reliable copper-wound ceiling fan with aerodynamically contoured blades.',
     specs: {
-      'Channels': '4 Independent Isolated Channels',
-      'Trigger Voltage': '24V DC / 10A Output',
-      'Mounting': 'Standard 35mm DIN Rail',
-      'Isolation': 'Optocoupler 2500V'
+      'Motor': '100% Copper Wound',
+      'Sweep': '1200mm',
+      'Air Delivery': '230 CMM',
+      'Warranty': '2 Years'
     }
   },
   {
-    id: 'prod-6',
-    name: 'Celing fan with light',
-    category: 'Fans',
-    price: 45.0,
-    rating: 5,
-    image: f3,
-    isNew: true,
-    specs: {
-      'Channels': '4 Independent Isolated Channels',
-      'Trigger Voltage': '24V DC / 10A Output',
-      'Mounting': 'Standard 35mm DIN Rail',
-      'Isolation': 'Optocoupler 2500V'
-    }
-  },
-  {
-    id: 'prod-7',
-    name: 'Pedestal fan',
-    category: 'Fans',
-    price: 45.0,
-    rating: 5,
-    image: f4,
-    isNew: true,
-    specs: {
-      'Channels': '4 Independent Isolated Channels',
-      'Trigger Voltage': '24V DC / 10A Output',
-      'Mounting': 'Standard 35mm DIN Rail',
-      'Isolation': 'Optocoupler 2500V'
-    }
-  },
-  {
-    id: 'prod-8',
-    name: 'Portable Desk fan',
-    category: 'Fans',
-    price: 45.0,
-    rating: 5,
-    image: f5,
-    isNew: true,
-    specs: {
-      'Channels': '4 Independent Isolated Channels',
-      'Trigger Voltage': '24V DC / 10A Output',
-      'Mounting': 'Standard 35mm DIN Rail',
-      'Isolation': 'Optocoupler 2500V'
-    }
-  },
-  {
-    id: 'prod-9',
-    name: 'Exhaust fan - Black',
-    category: 'Fans',
-    price: 45.0,
-    rating: 5,
-    image: f6,
-    isNew: true,
-    specs: {
-      'Channels': '4 Independent Isolated Channels',
-      'Trigger Voltage': '24V DC / 10A Output',
-      'Mounting': 'Standard 35mm DIN Rail',
-      'Isolation': 'Optocoupler 2500V'
-    }
-  },
-  {
-    id: 'prod-10',
-    name: 'Exhaust fan - Orange',
-    category: 'Fans',
-    price: 45.0,
-    rating: 5,
-    image: f7,
-    isNew: true,
-    specs: {
-      'Channels': '4 Independent Isolated Channels',
-      'Trigger Voltage': '24V DC / 10A Output',
-      'Mounting': 'Standard 35mm DIN Rail',
-      'Isolation': 'Optocoupler 2500V'
-    }
-  },
-  {
-    id: 'prod-11',
+    id: 'default-bestseller-5',
     name: 'Line Monitoring relay',
     category: 'Relay Modules',
     price: 45.0,
     rating: 5,
     image: r1,
     isNew: true,
+    isOffer: false,
+    isBestSeller: true,
+    inStock: true,
+    description: '3-phase voltage and phase sequence monitoring protection relay.',
     specs: {
       'Channels': '4 Independent Isolated Channels',
       'Trigger Voltage': '24V DC / 10A Output',
@@ -199,107 +176,182 @@ export const INITIAL_PRODUCTS: Product[] = [
     }
   },
   {
-    id: 'prod-12',
+    id: 'default-bestseller-6',
+    name: 'Proximity & Photoelectric sensor',
+    category: 'Sensors',
+    price: 129.0,
+    rating: 4,
+    image: s1,
+    isOffer: false,
+    isBestSeller: true,
+    inStock: true,
+    description: 'Inductive and optical object detection sensor for industrial automation.',
+    specs: {
+      'Sensing Distance': '15mm (Inductive) / 2m (Optical)',
+      'Output': 'NPN/PNP NO+NC configurable',
+      'Response Time': '< 1 ms',
+      'Protection': 'IP68 Waterproof'
+    }
+  }
+];
+
+// 3. Complete Default Shop Catalog (All categories: Fans, Lighting, Relays, Generators, Meters, Sensors)
+export const DEFAULT_SHOP_PRODUCTS: Product[] = [
+  ...DEFAULT_BEST_SELLER_PRODUCTS,
+  {
+    id: 'default-shop-1',
+    name: 'Ceiling fan with light wood finish',
+    category: 'Fans',
+    price: 45.0,
+    rating: 5,
+    image: f3,
+    isNew: true,
+    isOffer: false,
+    isBestSeller: false,
+    inStock: true,
+    description: 'Elegant wood-finish designer fan with center chandelier illumination.',
+    specs: {
+      'Finish': 'Antique Brass & Walnut',
+      'Sweep': '1320mm (52 Inch)',
+      'Blades': 'Handcrafted Natural Wood',
+      'Lighting': 'E27 Warm Light'
+    }
+  },
+  {
+    id: 'default-shop-2',
+    name: 'Pedestal fan high speed',
+    category: 'Fans',
+    price: 45.0,
+    rating: 5,
+    image: f4,
+    isNew: true,
+    isOffer: false,
+    isBestSeller: false,
+    inStock: true,
+    description: 'Telescopic height adjustable pedestal fan with wide-angle oscillation.',
+    specs: {
+      'Speed': '2100 RPM High Thrust',
+      'Height Range': '110cm - 145cm',
+      'Blades': 'Aerodynamic 3-Leaf Metal',
+      'Safety': 'Thermal Overload Protection'
+    }
+  },
+  {
+    id: 'default-shop-3',
+    name: 'Portable Desk fan',
+    category: 'Fans',
+    price: 45.0,
+    rating: 5,
+    image: f5,
+    isNew: true,
+    isOffer: false,
+    isBestSeller: false,
+    inStock: true,
+    description: 'Compact ultra-quiet personal USB rechargeable desk fan.',
+    specs: {
+      'Battery': '4000mAh Lithium Ion',
+      'Runtime': '8 - 14 Hours',
+      'Noise': '< 25 dB Whispering Quiet',
+      'Port': 'Type-C Fast Charge'
+    }
+  },
+  {
+    id: 'default-shop-4',
+    name: 'Exhaust fan - Black',
+    category: 'Fans',
+    price: 45.0,
+    rating: 5,
+    image: f6,
+    isNew: true,
+    isOffer: false,
+    isBestSeller: false,
+    inStock: true,
+    description: 'High air extraction rate bathroom & kitchen ventilation fan.',
+    specs: {
+      'Mounting': 'Wall & Glass Mount',
+      'Extraction': '350 m³/h',
+      'Shutter': 'Automatic Backdraft Shutter',
+      'Rating': 'IP44 Water Resistant'
+    }
+  },
+  {
+    id: 'default-shop-5',
+    name: 'Exhaust fan - Orange Heavy Duty',
+    category: 'Fans',
+    price: 45.0,
+    rating: 5,
+    image: f7,
+    isNew: true,
+    isOffer: false,
+    isBestSeller: false,
+    inStock: true,
+    description: 'Industrial heavy duty metal ventilation fan for workshop and factories.',
+    specs: {
+      'Diameter': '300mm (12 Inch)',
+      'Frame': 'Powder Coated Cast Iron',
+      'Speed': '1400 RPM Continuous',
+      'Motor': 'Heavy Duty Class F'
+    }
+  },
+  {
+    id: 'default-shop-6',
     name: 'Selec Line Monitoring relay',
     category: 'Relay Modules',
     price: 45.0,
     rating: 5,
     image: r2,
     isNew: true,
+    isOffer: false,
+    isBestSeller: false,
+    inStock: true,
+    description: 'Digital phase failure, unbalance and under/over voltage relay.',
     specs: {
-      'Channels': '4 Independent Isolated Channels',
-      'Trigger Voltage': '24V DC / 10A Output',
-      'Mounting': 'Standard 35mm DIN Rail',
-      'Isolation': 'Optocoupler 2500V'
+      'Monitoring': 'Phase Asymmetry, Under/Over V',
+      'Relay Output': '2 C/O SPDT 5A',
+      'Mounting': 'DIN Rail 35mm',
+      'Accuracy': '±1% True RMS'
     }
   },
   {
-    id: 'prod-13',
+    id: 'default-shop-7',
     name: 'Selec Advanced Static Var Generator',
     category: 'Generators',
     price: 1299.0,
     rating: 5,
     image: g1,
+    isOffer: false,
+    isBestSeller: false,
+    inStock: true,
+    description: 'Dynamic reactive power compensation and harmonic filtering unit.',
     specs: {
       'Output Power': '7500 Peak Watts / 6800 Running',
-      'Fuel Type': 'Ultra-low Sulfur Diesel',
-      'Runtime': '14 Hours @ 50% Load',
+      'Response Time': '< 5ms ultra-fast',
+      'Target PF': '-0.99 to +0.99 continuous',
       'Noise Level': '68 dBA @ 7 meters'
     }
   },
   {
-    id: 'prod-14',
+    id: 'default-shop-8',
     name: 'Digital earth fault relay',
     category: 'Relay Modules',
     price: 350.0,
     rating: 5,
     image: r3,
     onSale: true,
+    isOffer: false,
+    isBestSeller: false,
+    inStock: true,
     discountPercentage: 15,
+    description: 'Microcontroller based digital earth fault current monitoring relay.',
     specs: {
-      'Power': '5 HP / 3.7 kW',
-      'Phase': '3-Phase 460V',
-      'RPM': '1750 RPM',
-      'Efficiency': 'Premium IE3 Efficiency'
+      'Current Range': '0.1A to 30A adjustable',
+      'Trip Delay': '0.05s to 10s',
+      'Display': '7-Segment LED',
+      'Standards': 'IEC 60255 compliant'
     }
   },
   {
-    id: 'prod-15',
-    name: 'Thermister protection relay',
-    category: 'Relay Modules',
-    price: 89.99,
-    rating: 3,
-    image: r4,
-    onSale: true,
-    specs: {
-      'Connectivity': 'Bluetooth 5.3 & AUX',
-      'Battery Life': '24 Hours continuous',
-      'Protection': 'IP67 Dust & Water'
-    }
-  },
-  {
-    id: 'prod-16',
-    name: 'Voltage moniroting relay',
-    category: 'Relay Modules',
-    price: 899.0,
-    rating: 4,
-    image: r5,
-    onSale: true,
-    specs: {
-      'Processor': 'Intel Core i7-14700H',
-      'RAM': '32GB DDR5',
-      'Storage': '1TB NVMe PCIe Gen4',
-      'GPU': 'NVIDIA RTX 4060 8GB'
-    }
-  },
-  {
-    id: 'prod-17',
-    name: 'Earth leakage relay',
-    category: 'Relay Modules',
-    price: 199.0,
-    rating: 5,
-    image: r6,
-    specs: {
-      'Driver': '50mm Neodymium Titanium',
-      'Frequency Response': '10Hz - 40,000Hz',
-      'ANC': '-38dB Active Hybrid ANC'
-    }
-  },
-  {
-    id: 'prod-18',
-    name: 'Proximity & Photoelectric sensor',
-    category: 'Sensors',
-    price: 129.0,
-    rating: 4,
-    image: s1,
-    specs: {
-      'Sound': '7.1 Spatial Audio',
-      'Mic': 'Detachable Noise-Canceling Boom',
-      'Lighting': 'Chroma RGB 16.8M Colors'
-    }
-  },
-  {
-    id: 'prod-19',
+    id: 'default-shop-9',
     name: 'Smart vision sensor',
     category: 'Sensors',
     price: 159.0,
@@ -307,78 +359,57 @@ export const INITIAL_PRODUCTS: Product[] = [
     rating: 5,
     image: s2,
     onSale: true,
+    isOffer: false,
+    isBestSeller: false,
+    inStock: true,
+    discountPercentage: 11,
+    description: 'AI-assisted optical inspection and part presence sensor.',
     specs: {
-      'Latency': '<15ms Ultra Low Latency',
-      'Battery': '35 Hours Battery',
-      'Connection': '2.4GHz Dongle & Bluetooth 5.2'
+      'Resolution': '1280 x 1024 @ 60 FPS',
+      'Lighting': 'Built-in Multi-Angle Ring LED',
+      'Interface': 'Ethernet TCP/IP, Modbus',
+      'Inspection Tools': 'Pattern, OCR, Measurement'
     }
   },
   {
-    id: 'prod-20',
-    name: 'Inclination & accelertion sensor',
-    category: 'Sensors',
-    price: 75.0,
-    rating: 5,
-    image: s3,
-    specs: {
-      'Protocol': 'Modbus RTU over RS485',
-      'Accuracy': '±0.2°C Temperature / ±1.5% RH',
-      'Enclosure': 'NEMA 4X / IP66 Stainless Steel'
-    }
-  },
-  {
-    id: 'prod-21',
-    name: 'Rotatory encoders',
-    category: 'Sensors',
-    price: 115.0,
-    rating: 4,
-    image: s4,
-    specs: {
-      'Luminous Efficacy': '160 lm/W (32,000 Lumens)',
-      'Lifespan': '50,000 Hours L70',
-      'Input Voltage': '100-277V AC'
-    }
-  },
-  {
-    id: 'prod-22',
-    name: 'Angle sensors',
-    category: 'Sensors',
-    price: 115.0,
-    rating: 4,
-    image: s5,
-    specs: {
-      'Luminous Efficacy': '160 lm/W (32,000 Lumens)',
-      'Lifespan': '50,000 Hours L70',
-      'Input Voltage': '100-277V AC'
-    }
-  },
-  {
-    id: 'prod-23',
+    id: 'default-shop-10',
     name: 'Digital Panel meter',
     category: 'Meters',
     price: 115.0,
     rating: 4,
     image: m1,
+    isOffer: false,
+    isBestSeller: false,
+    inStock: true,
+    description: 'Multifunction power, current, voltage and energy monitoring meter.',
     specs: {
-      'Luminous Efficacy': '160 lm/W (32,000 Lumens)',
-      'Lifespan': '50,000 Hours L70',
-      'Input Voltage': '100-277V AC'
+      'Display': 'Backlit LCD 3-Line',
+      'Accuracy Class': 'Class 0.5s',
+      'Parameters': 'V, A, Hz, PF, kW, kVA, kWh',
+      'Port': 'RS-485 Modbus'
     }
   },
   {
-    id: 'prod-24',
+    id: 'default-shop-11',
     name: 'Hour meter',
     category: 'Meters',
     price: 115.0,
     rating: 4,
     image: m2,
+    isOffer: false,
+    isBestSeller: false,
+    inStock: true,
+    description: 'Electromechanical run-time counter for preventive maintenance.',
     specs: {
-      'Luminous Efficacy': '160 lm/W (32,000 Lumens)',
-      'Lifespan': '50,000 Hours L70',
-      'Input Voltage': '100-277V AC'
+      'Capacity': '99999.99 Hours',
+      'Operating Voltage': '90 - 264V AC 50/60Hz',
+      'Bezel Size': '48 x 48 mm DIN',
+      'Reset': 'Non-Resettable Tamperproof'
     }
   }
 ];
+
+export const INITIAL_PRODUCTS = DEFAULT_SHOP_PRODUCTS;
 
 export const REVIEWS: Review[] = [
   {

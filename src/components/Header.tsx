@@ -3,12 +3,13 @@ import { ShoppingCart, Menu, X } from 'lucide-react';
 import logo from '../../assets/logo.png';
 
 interface HeaderProps {
-  activeTab: 'home' | 'shop';
-  setActiveTab: (tab: 'home' | 'shop') => void;
+  activeTab: 'home' | 'shop' | 'admin';
+  setActiveTab: (tab: 'home' | 'shop' | 'admin') => void;
   cartCount: number;
   onOpenCart: () => void;
-  onSearch?: (query: string) => void;
-  searchQuery?: string;
+  onOpenAdmin: () => void;
+  onSearch: (query: string) => void;
+  searchQuery: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -16,13 +17,14 @@ export const Header: React.FC<HeaderProps> = ({
   setActiveTab,
   cartCount,
   onOpenCart,
+  onOpenAdmin,
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
+      if (window.scrollY > 50) {
         setIsScrolled(true);
       } else {
         setIsScrolled(false);
@@ -33,22 +35,31 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   const scrollToSection = (id: string) => {
-    setActiveTab('home');
     setIsMobileMenuOpen(false);
-    setTimeout(() => {
+    if (activeTab !== 'home') {
+      setActiveTab('home');
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
       const element = document.getElementById(id);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
-    }, 50);
+    }
   };
+
+  const isLightNav = isScrolled || activeTab === 'shop' || activeTab === 'admin';
 
   return (
     <header
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
         isScrolled
           ? 'scrolled-nav shadow-lg'
-          : activeTab === 'shop'
+          : isLightNav
           ? 'bg-[#fff8f6]/95 backdrop-blur-md border-b border-[#e5beb3]/40 shadow-xs'
           : 'bg-transparent text-[#271813]'
       }`}
@@ -63,7 +74,8 @@ export const Header: React.FC<HeaderProps> = ({
             }}
             className="font-extrabold text-2xl tracking-tighter text-left cursor-pointer focus:outline-none transition-colors"
           >
-            <img src={logo} alt="Aarka Inc" className="h-10 sm:h-14 w-auto" />          </button>
+            <img src={logo} alt="Aarka Inc" className="h-10 sm:h-14 w-auto" />
+          </button>
         </div>
 
         {/* Navigation Links */}
@@ -74,10 +86,10 @@ export const Header: React.FC<HeaderProps> = ({
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             className={`font-semibold text-sm transition-colors cursor-pointer ${
-              activeTab === 'shop'
-                ? 'text-[#d63d00] hover:text-[#ab2f00]'
-                : activeTab === 'home'
-                ? 'text-[#d63d00]'
+              activeTab === 'home'
+                ? 'text-[#d63d00] font-bold border-b-2 border-[#d63d00] pb-0.5'
+                : isLightNav
+                ? 'text-gray-700 hover:text-[#d63d00]'
                 : 'text-white hover:text-[#e5beb3]'
             }`}
           >
@@ -88,6 +100,8 @@ export const Header: React.FC<HeaderProps> = ({
             className={`font-semibold text-sm transition-colors cursor-pointer ${
               activeTab === 'shop'
                 ? 'text-[#d63d00] font-bold border-b-2 border-[#d63d00] pb-0.5'
+                : isLightNav
+                ? 'text-gray-700 hover:text-[#d63d00]'
                 : 'text-white hover:text-[#e5beb3]'
             }`}
           >
@@ -96,9 +110,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={() => scrollToSection('offers')}
             className={`font-semibold text-sm transition-colors cursor-pointer ${
-              activeTab === 'shop'
-                ? 'text-[#d63d00] hover:text-[#ab2f00]'
-                : 'text-white hover:text-[#e5beb3]'
+              isLightNav ? 'text-gray-700 hover:text-[#d63d00]' : 'text-white hover:text-[#e5beb3]'
             }`}
           >
             Offers
@@ -106,9 +118,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={() => scrollToSection('best-sellers')}
             className={`font-semibold text-sm transition-colors cursor-pointer ${
-              activeTab === 'shop'
-                ? 'text-[#d63d00] hover:text-[#ab2f00]'
-                : 'text-white hover:text-[#e5beb3]'
+              isLightNav ? 'text-gray-700 hover:text-[#d63d00]' : 'text-white hover:text-[#e5beb3]'
             }`}
           >
             Best Sellers
@@ -116,9 +126,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={() => scrollToSection('about-us')}
             className={`font-semibold text-sm transition-colors cursor-pointer ${
-              activeTab === 'shop'
-                ? 'text-[#d63d00] hover:text-[#ab2f00]'
-                : 'text-white hover:text-[#e5beb3]'
+              isLightNav ? 'text-gray-700 hover:text-[#d63d00]' : 'text-white hover:text-[#e5beb3]'
             }`}
           >
             About Us
@@ -131,7 +139,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onOpenCart}
             className={`relative p-2 rounded-lg transition-all cursor-pointer active:scale-95 ${
-              activeTab === 'shop' ? 'text-[#d63d00] hover:bg-[#d63d00]/10' : 'text-white hover:bg-white/10'
+              isLightNav ? 'text-[#d63d00] hover:bg-[#d63d00]/10' : 'text-white hover:bg-white/10'
             }`}
             aria-label="Shopping Cart"
           >
@@ -147,7 +155,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className={`md:hidden p-2 rounded-lg transition-colors cursor-pointer ${
-              activeTab === 'shop' ? 'text-[#d63d00]' : 'text-white'
+              isLightNav ? 'text-[#d63d00]' : 'text-white'
             }`}
             aria-label="Toggle Menu"
           >
@@ -158,7 +166,7 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-[#000000] text-white px-6 py-6 border-b border-white/10 shadow-xl flex flex-col gap-4 animate-fadeIn">
+        <div className="md:hidden bg-[#1a0f0c] text-white px-6 py-6 border-b border-white/10 shadow-2xl flex flex-col gap-4 animate-fadeIn">
           <button
             onClick={() => {
               setActiveTab('home');
@@ -166,7 +174,7 @@ export const Header: React.FC<HeaderProps> = ({
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             className={`text-left font-semibold text-lg py-1 ${
-              activeTab === 'shop' ? 'text-[#d63d00]' : activeTab === 'home' ? 'text-[#d63d00]' : 'text-white'
+              activeTab === 'home' ? 'text-[#d63d00]' : 'text-white'
             }`}
           >
             Home
@@ -176,31 +184,27 @@ export const Header: React.FC<HeaderProps> = ({
               setActiveTab('shop');
               setIsMobileMenuOpen(false);
             }}
-            className="text-left font-semibold text-lg py-1 text-[#d63d00]"
+            className={`text-left font-semibold text-lg py-1 ${
+              activeTab === 'shop' ? 'text-[#d63d00]' : 'text-white'
+            }`}
           >
             Shop Electrical Gear
           </button>
           <button
             onClick={() => scrollToSection('offers')}
-            className={`text-left font-semibold text-lg py-1 ${
-              activeTab === 'shop' ? 'text-[#d63d00]' : 'text-white hover:text-[#d63d00]'
-            }`}
+            className="text-left font-semibold text-lg py-1 text-white hover:text-[#d63d00]"
           >
-            Offers & Discounts
+            Offers
           </button>
           <button
             onClick={() => scrollToSection('best-sellers')}
-            className={`text-left font-semibold text-lg py-1 ${
-              activeTab === 'shop' ? 'text-[#d63d00]' : 'text-white hover:text-[#d63d00]'
-            }`}
+            className="text-left font-semibold text-lg py-1 text-white hover:text-[#d63d00]"
           >
             Best Sellers
           </button>
           <button
             onClick={() => scrollToSection('about-us')}
-            className={`text-left font-semibold text-lg py-1 ${
-              activeTab === 'shop' ? 'text-[#d63d00]' : 'text-white hover:text-[#d63d00]'
-            }`}
+            className="text-left font-semibold text-lg py-1 text-white hover:text-[#d63d00]"
           >
             About Us
           </button>

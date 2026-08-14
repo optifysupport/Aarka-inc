@@ -1,7 +1,7 @@
 export interface Product {
   id: string;
   name: string;
-  category: 'Relay Modules' | 'Generators' | 'Meters' | 'Sensors' | 'Lighting' | 'Fans';
+  category: string;
   price: number;
   originalPrice?: number;
   rating: number;
@@ -10,6 +10,11 @@ export interface Product {
   isNew?: boolean;
   discountPercentage?: number;
   specs?: Record<string, string>;
+  description?: string;
+  isOffer?: boolean;
+  isBestSeller?: boolean;
+  inStock?: boolean;
+  created_at?: string;
 }
 
 export interface CartItem {
@@ -31,4 +36,16 @@ export interface Review {
   text: string;
   rating: number;
   date?: string;
+}
+
+export interface AdminCredentials {
+  passwordHash?: string;
+  isLoggedIn: boolean;
+  lastLogin?: string;
+}
+
+export interface SupabaseConfig {
+  url: string;
+  anonKey: string;
+  isConnected: boolean;
 }

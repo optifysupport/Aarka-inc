@@ -16,11 +16,11 @@ export const ShopView: React.FC<ShopViewProps> = ({
   onAddToCart,
   onQuickView,
   initialCategory,
-  searchQuery,
+  searchQuery = '',
   setSearchQuery,
 }) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
-    initialCategory ? [initialCategory] : ['Components']
+    initialCategory ? [initialCategory] : []
   );
   const [minPrice, setMinPrice] = useState<string>('');
   const [maxPrice, setMaxPrice] = useState<string>('');
@@ -33,14 +33,13 @@ export const ShopView: React.FC<ShopViewProps> = ({
   const [tempMinPrice, setTempMinPrice] = useState<string>(minPrice);
   const [tempMaxPrice, setTempMaxPrice] = useState<string>(maxPrice);
 
-  const categories = [
-    'Relay Modules',
-    'Generators',
-    'Motors',
-    'Sensors',
-    'Lighting',
-    'Fans'
-  ];
+  // Dynamically extract categories from all current products
+  const categories = useMemo(() => {
+    const baseCategories = ['Lighting', 'Fans', 'Relay Modules', 'Generators', 'Sensors', 'Meters'];
+    const productCategories = products.map((p) => p.category).filter(Boolean);
+    const combined = Array.from(new Set([...baseCategories, ...productCategories]));
+    return combined;
+  }, [products]);
 
   const handleOpenMobileFilter = () => {
     setTempSelectedCategories(selectedCategories);
@@ -84,7 +83,11 @@ export const ShopView: React.FC<ShopViewProps> = ({
   const handleApplyPrice = () => {
     const min = parseFloat(minPrice) || 0;
     const max = parseFloat(maxPrice) || Infinity;
-    setAppliedPriceRange({ min, max });
+    if (minPrice !== '' || maxPrice !== '') {
+      setAppliedPriceRange({ min, max });
+    } else {
+      setAppliedPriceRange(null);
+    }
   };
 
   const activeFilterCount = selectedCategories.length + (appliedPriceRange ? 1 : 0);
@@ -96,14 +99,14 @@ export const ShopView: React.FC<ShopViewProps> = ({
         // Search Filter
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase();
-          const matchName = p.name.toLowerCase().includes(q);
-          const matchCat = p.category.toLowerCase().includes(q);
-          const matchDesc = p.description.toLowerCase().includes(q);
+          const matchName = (p.name || '').toLowerCase().includes(q);
+          const matchCat = (p.category || '').toLowerCase().includes(q);
+          const matchDesc = (p.description || '').toLowerCase().includes(q);
           if (!matchName && !matchCat && !matchDesc) return false;
         }
 
         // Category Filter
-        if (selectedCategories.length > 0 && !selectedCategories.includes('Components')) {
+        if (selectedCategories.length > 0) {
           if (!selectedCategories.includes(p.category)) return false;
         }
 
@@ -126,47 +129,75 @@ export const ShopView: React.FC<ShopViewProps> = ({
     <div className="pt-[110px] pb-20 px-4 md:px-16 max-w-[1440px] mx-auto min-h-screen">
       {/* Page Header */}
       <header className="mb-10">
-        <h1 className="font-extrabold text-3xl sm:text-4xl md:text-5xl text-[#271813] mb-2 tracking-tight">
-          Shop Electrical Gear
-        </h1>
-        <p className="text-gray-600 text-sm sm:text-base max-w-2xl leading-relaxed">
-          Explore our curated collection of premium relay modules, generators, and industrial sensors engineered for reliability and precision in demanding environments.
-        </p>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="font-extrabold text-3xl sm:text-4xl md:text-5xl text-[#271813] mb-2 tracking-tight">
+              Shop Electrical Gear
+            </h1>
+            <p className="text-gray-600 text-sm sm:text-base max-w-2xl leading-relaxed">
+              Explore our full inventory of {products.length} products: modern lighting, high-speed fans, relay modules, generators, meters, and industrial sensors.
+            </p>
+          </div>
+          <div className="text-xs font-bold text-[#ab2f00] bg-[#ab2f00]/10 px-3.5 py-1.5 rounded-full border border-[#ab2f00]/30 self-start md:self-auto">
+            Showing {filteredProducts.length} of {products.length} products
+          </div>
+        </div>
       </header>
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Sidebar Filters (Desktop Only) */}
         <aside className="hidden lg:block w-[280px] shrink-0">
           <div className="glass-panel p-6 rounded-2xl sticky top-[110px]">
-            <h3 className="font-bold text-lg text-[#271813] mb-4 uppercase tracking-wider">
-              Filters
-            </h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-lg text-[#271813] uppercase tracking-wider">
+                Filters
+              </h3>
+              {activeFilterCount > 0 && (
+                <button
+                  onClick={() => {
+                    setSelectedCategories([]);
+                    setAppliedPriceRange(null);
+                    setMinPrice('');
+                    setMaxPrice('');
+                  }}
+                  className="text-[11px] font-bold text-[#ab2f00] hover:underline cursor-pointer"
+                >
+                  Clear all
+                </button>
+              )}
+            </div>
 
             {/* Category Checkboxes */}
             <div className="mb-6">
               <h4 className="font-semibold text-xs text-gray-700 mb-3 uppercase tracking-wider">
-                Category
+                Categories ({categories.length})
               </h4>
               <ul className="space-y-2.5 max-h-[320px] overflow-y-auto pr-1 custom-scrollbar">
                 {categories.map((cat) => {
                   const checked = selectedCategories.includes(cat);
+                  const count = products.filter((p) => p.category === cat).length;
                   return (
                     <li key={cat}>
-                      <label className="flex items-center gap-3 cursor-pointer group select-none">
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={() => toggleCategory(cat)}
-                          className="w-4 h-4 rounded border-[#e5beb3] text-[#ab2f00] focus:ring-[#ab2f00] cursor-pointer"
-                        />
-                        <span
-                          className={`text-sm transition-colors ${
-                            checked
-                              ? 'font-bold text-[#ab2f00]'
-                              : 'text-gray-700 group-hover:text-[#ab2f00]'
-                          }`}
-                        >
-                          {cat}
+                      <label className="flex items-center justify-between gap-3 cursor-pointer group select-none">
+                        <div className="flex items-center gap-2.5">
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggleCategory(cat)}
+                            className="w-4 h-4 rounded border-[#e5beb3] text-[#ab2f00] focus:ring-[#ab2f00] cursor-pointer"
+                          />
+                          <span
+                            className={`text-sm transition-colors ${
+                              checked
+                                ? 'font-bold text-[#ab2f00]'
+                                : 'text-gray-700 group-hover:text-[#ab2f00]'
+                            }`}
+                          >
+                            {cat}
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-gray-400 font-semibold">
+                          ({count})
                         </span>
                       </label>
                     </li>
@@ -331,9 +362,9 @@ export const ShopView: React.FC<ShopViewProps> = ({
           {filteredProducts.length === 0 ? (
             <div className="bg-white rounded-2xl p-12 text-center border border-[#e5beb3]/40 shadow-sm my-8">
               <ShoppingBag className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <h3 className="text-lg font-bold text-gray-800">No products found</h3>
+              <h3 className="text-lg font-bold text-gray-800">No products match your criteria</h3>
               <p className="text-sm text-gray-500 mt-1">
-                Try clearing your filters to see more products.
+                Try clearing your filters or changing search keywords to discover more items.
               </p>
               <button
                 onClick={() => {
@@ -341,7 +372,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
                   setAppliedPriceRange(null);
                   if (setSearchQuery) setSearchQuery('');
                 }}
-                className="mt-4 px-6 py-2 bg-[#ab2f00] text-white font-bold rounded-lg text-xs uppercase cursor-pointer"
+                className="mt-4 px-6 py-2.5 bg-[#ab2f00] text-white font-bold rounded-xl text-xs uppercase cursor-pointer hover:bg-[#d63d00] shadow-md transition-colors"
               >
                 Reset All Filters
               </button>
@@ -356,7 +387,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
                     className="glass-card rounded-xl sm:rounded-2xl overflow-hidden flex flex-col relative group cursor-pointer border border-[#e5beb3]/40 shadow-sm hover:shadow-xl transition-all duration-300"
                   >
                     {/* Badge */}
-                    <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10 flex flex-wrap gap-1 sm:gap-2">
+                    <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10 flex flex-col gap-1">
                       {prod.isNew && (
                         <span className="px-1.5 py-0.5 sm:px-2.5 sm:py-1 bg-[#ab2f00] text-white font-bold text-[9px] sm:text-[10px] rounded shadow-sm uppercase">
                           NEW
@@ -367,7 +398,16 @@ export const ShopView: React.FC<ShopViewProps> = ({
                           {prod.discountPercentage}% OFF
                         </span>
                       )}
+                      {prod.isOffer && (
+                        <span className="px-1.5 py-0.5 sm:px-2.5 sm:py-1 bg-[#f14706] text-white font-bold text-[9px] sm:text-[10px] rounded shadow-sm uppercase">
+                          OFFER
+                        </span>
+                      )}
                     </div>
+
+                    <span className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/40 backdrop-blur-xs text-white px-2 py-0.5 rounded text-[9px] font-semibold uppercase z-10">
+                      {prod.category}
+                    </span>
 
                     {/* Image Area */}
                     <div className="aspect-square bg-[#fff1ed] relative overflow-hidden flex items-center justify-center p-3 sm:p-6">
@@ -375,7 +415,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
                       <img
                         src={prod.image}
                         alt={prod.name}
-                        className="object-contain w-full h-full mix-blend-multiply drop-shadow-md group-hover:scale-105 transition-transform duration-500"
+                        className="object-contain w-full h-full mix-blend-multiply drop-shadow-md group-hover:scale-108 transition-transform duration-500"
                       />
                     </div>
 
@@ -396,7 +436,7 @@ export const ShopView: React.FC<ShopViewProps> = ({
                           ))}
                         </div>
 
-                        <h3 className="font-extrabold text-xs sm:text-base text-[#271813] mb-1 leading-tight line-clamp-1">
+                        <h3 className="font-extrabold text-xs sm:text-base text-[#271813] mb-1 leading-tight line-clamp-1 group-hover:text-[#ab2f00] transition-colors">
                           {prod.name}
                         </h3>
                       </div>

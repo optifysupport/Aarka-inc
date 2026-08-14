@@ -1,7 +1,11 @@
 import React from 'react';
 import logo from '../../assets/logo.png';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onOpenAdmin?: () => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
   return (
     <footer className="glass-nav w-full border-t border-[#e5beb3]/40 mt-12 bg-[#fff1ed]">
       <div className="flex flex-col md:flex-row justify-between items-start px-6 md:px-16 py-12 gap-8 max-w-[1440px] mx-auto w-full">
@@ -14,7 +18,7 @@ export const Footer: React.FC = () => {
             </span>
           </div>
           <p className="text-gray-600 text-sm leading-relaxed">
-            Engineering clarity. Augmenting performance. Precision engineered components and peripherals for demanding environments.
+            Engineering clarity. Augmenting performance. Precision engineered components, high-speed fans, modern lighting, and industrial peripherals.
           </p>
         </div>
 
@@ -86,10 +90,18 @@ export const Footer: React.FC = () => {
         <p className="text-xs text-gray-500">
           © 2026 Aarka Inc Industrial Electrical Suppliers. All rights reserved.
         </p>
-        <div className="flex gap-4 text-xs text-gray-500">
-          <a href="#about-us" className="hover:text-[#ab2f00] transition-colors">Privacy Policy</a>
-          <a href="#about-us" className="hover:text-[#ab2f00] transition-colors">Terms of Service</a>
-          <a href="#about-us" className="hover:text-[#ab2f00] transition-colors">Warranty & Returns</a>
+        <div className="flex items-center gap-4 text-xs text-gray-500">
+          {/* Privacy Policy secretly triggers Admin Panel Login */}
+          <button
+            type="button"
+            onClick={onOpenAdmin}
+            className="hover:text-[#ab2f00] transition-colors cursor-pointer"
+          >
+            Privacy Policy
+          </button>
+          <a href="#about-us" className="hover:text-[#ab2f00] transition-colors">
+            Terms of Service
+          </a>
         </div>
       </div>
     </footer>
