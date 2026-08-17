@@ -66,7 +66,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     });
     message += `*Total Amount:* ₹${grandTotal.toFixed(2)}`;
 
-    const whatsappPhone = '917338309824';
+    const whatsappPhone = '919066558877';
     const whatsappUrl = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(message)}`;
 
     // Open WhatsApp link in new tab
