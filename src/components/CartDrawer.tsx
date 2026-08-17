@@ -47,7 +47,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
       setFormError('Please enter your name.');
       return;
     }
-    if (!customerMobile.trim() || customerMobile.trim().length < 8) {
+    if (!customerMobile.trim() || customerMobile.trim().length < 10) {
       setFormError('Please enter a valid mobile number.');
       return;
     }
