@@ -1,6 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Product } from '../types';
-import { DEFAULT_SHOP_PRODUCTS } from '../data/products';
 
 const STORAGE_KEY_ADMIN_AUTH = 'aarka_admin_auth_session';
 
@@ -70,12 +69,10 @@ export function mapProductToDbRow(product: Product): any {
   };
 }
 
-// Fetch all products: Database products come first, merged with default fallback catalog
+// Fetch all products: Only live products from Supabase database
 export async function loadAllProducts(): Promise<Product[]> {
-  const defaultCatalog: Product[] = [...DEFAULT_SHOP_PRODUCTS];
-
   if (!supabase) {
-    return defaultCatalog;
+    return [];
   }
 
   try {
@@ -84,21 +81,14 @@ export async function loadAllProducts(): Promise<Product[]> {
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (!error && data && Array.isArray(data) && data.length > 0) {
-      const dbProducts = data.map(mapDbRowToProduct);
-      const dbIds = new Set(dbProducts.map((p) => p.id));
-      
-      // Database products come first, followed by default catalog items not in DB
-      return [
-        ...dbProducts,
-        ...defaultCatalog.filter((p) => !dbIds.has(p.id)),
-      ];
+    if (!error && data && Array.isArray(data)) {
+      return data.map(mapDbRowToProduct);
     }
   } catch (err) {
-    console.warn('Supabase fetch issue (using default catalog):', err);
+    console.warn('Supabase fetch error:', err);
   }
 
-  return defaultCatalog;
+  return [];
 }
 
 // Save or update product in Supabase database

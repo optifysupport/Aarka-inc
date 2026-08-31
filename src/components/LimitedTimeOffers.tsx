@@ -1,6 +1,5 @@
 import React from 'react';
 import { Product } from '../types';
-import { DEFAULT_OFFER_PRODUCTS } from '../data/products';
 
 interface LimitedTimeOffersProps {
   products: Product[];
@@ -13,15 +12,12 @@ export const LimitedTimeOffers: React.FC<LimitedTimeOffersProps> = ({
   onAddToCart,
   onQuickView,
 }) => {
-  // 1. Get explicit custom offers from Supabase (Database products come first)
-  const customOffers = products.filter((p) => p.isOffer && !p.id.startsWith('default-'));
+  // Only display products marked as offer from live database
+  const displayOffers = products.filter((p) => p.isOffer).slice(0, 2);
 
-  // 2. If fewer than 2 offers are in database, fill remaining slots with default fallbacks
-  const customOfferIds = new Set(customOffers.map((p) => p.id));
-  const fallbackOffers = DEFAULT_OFFER_PRODUCTS.filter((p) => !customOfferIds.has(p.id));
-
-  // Exactly 2 cards always displayed (New products replace old defaults)
-  const displayOffers = [...customOffers, ...fallbackOffers].slice(0, 2);
+  if (displayOffers.length === 0) {
+    return null;
+  }
 
   return (
     <section id="offers" className="py-16 bg-[#fff8f6]">

@@ -54,7 +54,7 @@ export const OffersManager: React.FC<OffersManagerProps> = ({
                     : 'bg-gray-100 text-gray-500'
                 }`}
               >
-                {dbOffers[0] ? 'Custom Product' : 'Default Fallback Active'}
+                {dbOffers[0] ? 'Active Offer' : 'Empty Slot'}
               </span>
             </div>
 
@@ -89,9 +89,9 @@ export const OffersManager: React.FC<OffersManagerProps> = ({
             ) : (
               <div className="p-4 bg-[#fff8f6] rounded-2xl border border-dashed border-[#e5beb3] text-center text-gray-500">
                 <Info className="w-5 h-5 text-[#ab2f00] mx-auto mb-1 opacity-70" />
-                <p className="text-xs font-bold text-gray-700">Slot 1 is using Default Fallback</p>
+                <p className="text-xs font-bold text-gray-700">Slot 1 is Empty</p>
                 <p className="text-[11px] text-gray-500 mt-0.5">
-                  Adding a custom offer will replace the default product.
+                  Click below to assign or create an offer product.
                 </p>
               </div>
             )}
@@ -144,7 +144,7 @@ export const OffersManager: React.FC<OffersManagerProps> = ({
                     : 'bg-gray-100 text-gray-500'
                 }`}
               >
-                {dbOffers[1] ? 'Custom Product' : 'Default Fallback Active'}
+                {dbOffers[1] ? 'Active Offer' : 'Empty Slot'}
               </span>
             </div>
 
@@ -179,9 +179,9 @@ export const OffersManager: React.FC<OffersManagerProps> = ({
             ) : (
               <div className="p-4 bg-[#fff8f6] rounded-2xl border border-dashed border-[#e5beb3] text-center text-gray-500">
                 <Info className="w-5 h-5 text-[#ab2f00] mx-auto mb-1 opacity-70" />
-                <p className="text-xs font-bold text-gray-700">Slot 2 is using Default Fallback</p>
+                <p className="text-xs font-bold text-gray-700">Slot 2 is Empty</p>
                 <p className="text-[11px] text-gray-500 mt-0.5">
-                  Adding a custom offer will replace the default product.
+                  Click below to assign or create an offer product.
                 </p>
               </div>
             )}

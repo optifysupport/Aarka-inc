@@ -1,7 +1,6 @@
 import React from 'react';
 import { Product } from '../types';
 import { Sparkles } from 'lucide-react';
-import { DEFAULT_BEST_SELLER_PRODUCTS } from '../data/products';
 
 interface BestSellersProps {
   products: Product[];
@@ -14,15 +13,12 @@ export const BestSellers: React.FC<BestSellersProps> = ({
   onAddToCart,
   onQuickView,
 }) => {
-  // 1. Get explicit custom Best Sellers from Supabase (Database products come first)
-  const customBestSellers = products.filter((p) => p.isBestSeller && !p.id.startsWith('default-'));
+  // Only display products marked as Best Seller from live database
+  const displayBestSellers = products.filter((p) => p.isBestSeller);
 
-  // 2. Merge with Default Fallback Best Sellers (avoiding duplicate IDs)
-  const customIds = new Set(customBestSellers.map((p) => p.id));
-  const fallbackBestSellers = DEFAULT_BEST_SELLER_PRODUCTS.filter((p) => !customIds.has(p.id));
-
-  // Combine: Custom database best sellers come first, followed by default best sellers
-  const displayBestSellers = [...customBestSellers, ...fallbackBestSellers];
+  if (displayBestSellers.length === 0) {
+    return null;
+  }
 
   return (
     <section id="best-sellers" className="py-16 bg-[#fff8f6]">
