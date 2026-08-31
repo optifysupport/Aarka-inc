@@ -155,7 +155,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className={`md:hidden p-2 rounded-lg transition-colors cursor-pointer ${
-              isLightNav ? 'text-[#d63d00]' : 'text-white'
+              isLightNav ? 'text-[#271813] hover:bg-black/5' : 'text-white hover:bg-white/10'
             }`}
             aria-label="Toggle Menu"
           >
@@ -166,15 +166,15 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-[#1a0f0c] text-white px-6 py-6 border-b border-white/10 shadow-2xl flex flex-col gap-4 animate-fadeIn">
+        <div className="md:hidden bg-[#f8f6f5] text-[#271813] px-6 py-6 border-b border-[#e5beb3]/50 shadow-2xl flex flex-col gap-4 animate-fadeIn">
           <button
             onClick={() => {
               setActiveTab('home');
               setIsMobileMenuOpen(false);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className={`text-left font-semibold text-lg py-1 ${
-              activeTab === 'home' ? 'text-[#d63d00]' : 'text-white'
+            className={`text-left font-bold text-base py-1.5 transition-colors ${
+              activeTab === 'home' ? 'text-[#d63d00]' : 'text-[#271813] hover:text-[#d63d00]'
             }`}
           >
             Home
@@ -184,27 +184,27 @@ export const Header: React.FC<HeaderProps> = ({
               setActiveTab('shop');
               setIsMobileMenuOpen(false);
             }}
-            className={`text-left font-semibold text-lg py-1 ${
-              activeTab === 'shop' ? 'text-[#d63d00]' : 'text-white'
+            className={`text-left font-bold text-base py-1.5 transition-colors ${
+              activeTab === 'shop' ? 'text-[#d63d00]' : 'text-[#271813] hover:text-[#d63d00]'
             }`}
           >
             Shop Electrical Gear
           </button>
           <button
             onClick={() => scrollToSection('offers')}
-            className="text-left font-semibold text-lg py-1 text-white hover:text-[#d63d00]"
+            className="text-left font-bold text-base py-1.5 text-[#271813] hover:text-[#d63d00] transition-colors"
           >
             Offers
           </button>
           <button
             onClick={() => scrollToSection('best-sellers')}
-            className="text-left font-semibold text-lg py-1 text-white hover:text-[#d63d00]"
+            className="text-left font-bold text-base py-1.5 text-[#271813] hover:text-[#d63d00] transition-colors"
           >
             Best Sellers
           </button>
           <button
             onClick={() => scrollToSection('about-us')}
-            className="text-left font-semibold text-lg py-1 text-white hover:text-[#d63d00]"
+            className="text-left font-bold text-base py-1.5 text-[#271813] hover:text-[#d63d00] transition-colors"
           >
             About Us
           </button>

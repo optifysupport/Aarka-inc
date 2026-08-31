@@ -48,11 +48,12 @@
 }
 
 .scrolled-nav {
-  background-color: #000000 !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: #ffffff;
+  background-color: rgba(245, 243, 241, 0.95) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid rgba(229, 190, 179, 0.5) !important;
+  box-shadow: 0 4px 20px -2px rgba(39, 24, 19, 0.08) !important;
+  color: #271813 !important;
 }
 
 .hero-pattern {
