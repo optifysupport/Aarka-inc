@@ -1,0 +1,39 @@
+name: Keep Backend & Database Active
+
+on:
+  schedule:
+    # Runs every 6 hours to prevent Supabase database & backend instances from pausing
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Allows manual trigger from the GitHub Actions tab
+
+jobs:
+  keep-alive:
+    name: Ping Services
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase Database & REST API
+        if: env.SUPABASE_URL != '' && env.SUPABASE_ANON_KEY != ''
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          echo "Executing keep-alive query against Supabase REST API..."
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+            "${SUPABASE_URL}/rest/v1/products?select=id&limit=1")
+          
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
+            echo "Supabase database ping successful with status code: ${HTTP_STATUS}"
+          else
+            echo "Supabase ping returned HTTP status code: ${HTTP_STATUS}"
+          fi
+
+      - name: Ping Web Application / Backend Host
+        if: env.APP_URL != ''
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+        run: |
+          echo "Pinging web application URL..."
+          APP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -L "${APP_URL}")
+          echo "Application endpoint responded with status code: ${APP_STATUS}"
